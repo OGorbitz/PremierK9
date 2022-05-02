@@ -8,7 +8,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <Color x:Key="Primary">#240772</Color>
-            <Color x:Key="Accent">#bca3ff</Color>
+            <Color x:Key="Accent">#8785b4</Color>
             <Style TargetType="Entry">
                 <Setter Property="TextColor" Value="Black"></Setter>
             </Style>

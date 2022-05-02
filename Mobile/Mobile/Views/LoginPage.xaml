@@ -5,7 +5,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              x:Class="Mobile.Views.LoginPage"
+             xmlns:behaviour="clr-namespace:Mobile.Helpers.Behaviors"
+             xmlns:converter="clr-namespace:Mobile.Helpers.Converters"
+             xmlns:effects="clr-namespace:Mobile.Effects"
              Shell.NavBarIsVisible="False">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converter:InverseBoolConverter x:Key="InverseBoolConverter"/>
+            <converter:FirstValidationErrorConverter x:Key="FirstValidationErrorConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -15,21 +24,40 @@
             <StackLayout BackgroundColor="{StaticResource Primary}" VerticalOptions="FillAndExpand" HorizontalOptions="Fill">
                 <StackLayout Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="Center">
                     <ContentView Padding="0" VerticalOptions="FillAndExpand">
-                        <Image Source="premierk9_logo.png" VerticalOptions="Center" HeightRequest="256" />
+                        <Image Source="premierk9_logo.png" VerticalOptions="Center" HeightRequest="180" />
                     </ContentView>
                 </StackLayout>
             </StackLayout>
             <ScrollView Grid.Row="1">
                 <StackLayout Padding="10,0,10,0" VerticalOptions="Center">
-                    <Label Text="Username" HorizontalOptions="Center"/>
-                    <Frame CornerRadius="5" Margin="0,5,0,0" Padding="0" BackgroundColor="{StaticResource Accent}">
-                        <Entry Text="" x:Name="EntryUsername"/>
+                    <!--Username-->
+                    <Frame CornerRadius="5" Padding="0" BackgroundColor="{StaticResource Accent}">
+                        <Entry Text="{Binding Username.Value}" Placeholder="Username"  Visual="Material" x:Name="EntryUsername">
+                            <Entry.Behaviors>
+                                <behaviour:EntryLineValidationBehavior IsValid="{Binding Username.IsValid}"/>
+                            </Entry.Behaviors>
+                            <Entry.Effects>
+                                <effects:PlainEntry/>
+                            </Entry.Effects>
+                        </Entry>
                     </Frame>
-                    <Label Text="Password" Margin="0,20,0,0" HorizontalOptions="Center"/>
-                    <Frame CornerRadius="5" Margin="0,5,0,0" Padding="0" BackgroundColor="{StaticResource Accent}">
-                        <Entry Text="" x:Name="EntryPassword" IsPassword="True"/>
+                    <Label Text="{Binding Username.Errors, Converter={StaticResource FirstValidationErrorConverter}}"
+                           IsVisible="True" TextColor="Red"/>
+
+                    <!--Password-->
+                    <Frame CornerRadius="5" Padding="0" BackgroundColor="{StaticResource Accent}">
+                        <Entry Text="{Binding Password.Value}" Placeholder="Password" Visual="Material" IsPassword="True" x:Name="EntryPassword">
+                            <Entry.Behaviors>
+                                <behaviour:EntryLineValidationBehavior IsValid="{Binding Password.IsValid}"/>
+                            </Entry.Behaviors>
+                            <Entry.Effects>
+                                <effects:PlainEntry/>
+                            </Entry.Effects>
+                        </Entry>
                     </Frame>
-                    <Button Text="Login" Margin="0,20,0,0" Command="{Binding LoginCommand}" x:Name="ButtonLogin"/>
+                    <Label Text="{Binding Password.Errors, Converter={StaticResource FirstValidationErrorConverter}}"
+                           IsVisible="True" TextColor="Red"/>
+                    <Button CornerRadius="5" Text="Login" Margin="0,10,0,0" Command="{Binding LoginCommand}" x:Name="ButtonLogin"/>
                 </StackLayout>
             </ScrollView>
         </Grid>
