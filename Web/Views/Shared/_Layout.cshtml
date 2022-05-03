@@ -1,0 +1,39 @@
+﻿@inject SignInManager<IdentityUser> SignInManager
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ozzie.info - @ViewBag.Title</title>
+    <link rel="stylesheet" href="/css/site.css">
+
+    @RenderSection("AddToHead", required: false)
+</head>
+<body>
+    <header id="header">
+        <partial name="_NavbarPartial" />
+    </header>
+
+    <div id="container">
+        <div id="content">
+            @RenderBody()
+        </div>
+
+        <footer id="footer">
+            <p>&copy @System.DateTime.Now.Year Ozzie Gorbitz</p>
+            <div id="fshape"></div>
+
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <a id="fbutton" asp-area="Identity" asp-page="/Account/Logout" title="Logout"><h2>Logout</h2></a>
+            }
+            else
+            {
+                <a id="fbutton" asp-area="Identity" asp-page="/Account/Login"><h2>Login</h2></a>
+            }
+        </footer>
+    </div>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

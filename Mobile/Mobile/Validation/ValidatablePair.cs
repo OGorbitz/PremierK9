@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Mobile.Validation
 {
-    public class ValidatablePair<T> : IValidatable<ValidatablePair<T>>
+    public class ValidatablePair<T> : IValidatable<ValidatablePair<T>>, INotifyPropertyChanged
     {
         public List<IValidationRule<ValidatablePair<T>>> Validations { get; } = new List<IValidationRule<ValidatablePair<T>>>();
 

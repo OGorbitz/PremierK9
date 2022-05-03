@@ -4,6 +4,7 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
+             xmlns:local="clr-namespace:Mobile.ViewModels"
              x:Class="Mobile.Views.LoginPage"
              xmlns:behaviour="clr-namespace:Mobile.Helpers.Behaviors"
              xmlns:converter="clr-namespace:Mobile.Helpers.Converters"
@@ -15,6 +16,9 @@
             <converter:FirstValidationErrorConverter x:Key="FirstValidationErrorConverter"/>
         </ResourceDictionary>
     </ContentPage.Resources>
+    <ContentPage.BindingContext>
+        <local:LoginViewModel/>
+    </ContentPage.BindingContext>
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -46,7 +50,7 @@
 
                     <!--Password-->
                     <Frame CornerRadius="5" Padding="0" BackgroundColor="{StaticResource Accent}">
-                        <Entry Text="{Binding Password.Value}" Placeholder="Password" Visual="Material" IsPassword="True" x:Name="EntryPassword">
+                        <Entry Text="{Binding Password.Value}" Placeholder="Password"  Visual="Material" IsPassword="True" x:Name="EntryPassword">
                             <Entry.Behaviors>
                                 <behaviour:EntryLineValidationBehavior IsValid="{Binding Password.IsValid}"/>
                             </Entry.Behaviors>

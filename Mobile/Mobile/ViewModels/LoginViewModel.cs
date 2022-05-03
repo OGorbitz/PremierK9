@@ -12,7 +12,7 @@ namespace Mobile.ViewModels
 {
     public class LoginViewModel : BaseViewModel
     {
-        private Regex passwordRegExp = new Regex("((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})");
+        private readonly Regex passwordRegExp = new Regex("((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})");
 
         public ValidatableObject<string> Username { get; set; } = new ValidatableObject<string>();
         public ValidatableObject<string> Password { get; set; } = new ValidatableObject<string>();
@@ -32,9 +32,9 @@ namespace Mobile.ViewModels
                 // Prefixing with `//` switches to a different navigation stack instead of pushing to the active one
                 await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
 
-                ControlUnit unit = new ControlUnit()
+                Unit unit = new Unit()
                 {
-                    ID = "1",
+                    ID = Guid.NewGuid(),
                     Name = "Test"
                 };
             }
@@ -54,9 +54,5 @@ namespace Mobile.ViewModels
 
             return isUsernameValid && isPasswordValid;
         }
-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
     }
 }

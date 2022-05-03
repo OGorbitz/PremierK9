@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Mobile
 {
-    public class ValidatableObject<T> : IValidatable<T>
+    public class ValidatableObject<T> : IValidatable<T>, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
