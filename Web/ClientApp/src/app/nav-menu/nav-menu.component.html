@@ -1,44 +1,46 @@
 <header>
-  <nav
-    class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3"
-  >
-    <div class="container">
-      <a class="navbar-brand" [routerLink]="['/']">Angular</a>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target=".navbar-collapse"
-        aria-label="Toggle navigation"
-        [attr.aria-expanded]="isExpanded"
-        (click)="toggle()"
-      >
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top p-0">
+    <div class="container-lg">
+      <a class="navbar-brand p-0 d-inline-flex flex-row align-items-center" [routerLink]="['/']">
+        <img style="height: 90px; background-color: #bf1828 " src="assets/img/logo.png" />
+        <h3 class="nav-link m-0 text-white-50">Utility Panel</h3>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div
-        class="navbar-collapse collapse d-sm-inline-flex justify-content-end"
-        [ngClass]="{ show: isExpanded }"
-      >
-        <ul class="navbar-nav flex-grow">
-          <li
-            class="nav-item"
-            [routerLinkActive]="['link-active']"
-            [routerLinkActiveOptions]="{ exact: true }"
-          >
-            <a class="nav-link text-dark" [routerLink]="['/']">Home</a>
-          </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/counter']"
-              >Counter</a
-            >
-          </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/fetch-data']"
-              >Fetch data</a
-            >
-          </li>
-        </ul>
+      <div class="collapse navbar-collapse d-lg-flex flex-lg-column" id="navbarSupportedContent">
+        <div class="d-lg-inline-flex flex-lg-row w-100 my-2 fw-bolder">
+          <ul class="navbar-nav align-self-center me-5">
+            <li class="nav-item">
+            </li>
+          </ul>
+          <ul class="navbar-nav flex-grow-1">
+            <li class="nav-item dropdown d-flex align-items-center">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Angular Test Modules
+              </a>
+              <ul class="dropdown-menu mb-2" aria-labelledby="navbarDropdown">
+                <li>
+                  <a class="dropdown-item" [routerLink]="['/counter']">Counter</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" [routerLink]="['/fetch-data']">Fetch data</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <ul class="navbar-nav">
+            <li class="nav-item d-flex align-items-center">
+              <a class="nav-link" [routerLink]="['/unit']">View Unit</a>
+            </li>
+            <li class="nav-item d-flex align-items-center">
+              <a class="nav-link btn btn-outline-secondary fw-bold" href="/">Leave Utility Panel</a>
+            </li>
+          </ul>
+        </div>
+
       </div>
+
     </div>
   </nav>
 </header>
