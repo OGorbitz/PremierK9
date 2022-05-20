@@ -32,7 +32,7 @@ builder.Services.AddIdentityCore<IdentityUser>(options =>
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppIdentityContext>();
 
-
+//JWT
 builder.Services.AddScoped<JwtHandler>();
 builder.Services.AddAuthentication(opt =>
 {
@@ -52,6 +52,19 @@ builder.Services.AddAuthentication(opt =>
             .GetBytes(jwtSettings.GetSection("securityKey").Value))
     };
 });
+
+//CORS configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("EnableCORS", builder =>
+    {
+        builder.AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
+//TODO: Analyze security risks of CORS changes
+
 
 var app = builder.Build();
 
@@ -73,6 +86,11 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
 app.MapRazorPages();
+
+app.UseCors("EnableCORS");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 
 DatabaseInitializer.CreateOrMigrate(app);

@@ -1,0 +1,19 @@
+<div class="position-fixed m-auto vh-100 vw-100 top-0 start-0 d-flex flex-column justify-content-center align-items-center">
+  <div class="rounded-3 mb-5" style="background-color: #bf1828;">
+    <img src="assets/img/logo.png" />
+  </div>
+  <div class="col-5 card">
+    <div class="card-header">
+      <h1 class="text-center">Login</h1>
+
+    </div>
+    <div class="card-body">
+      <form #loginForm="ngForm" (ngSubmit)="login(loginForm)">
+        <div *ngIf="invalidLogin" class="alert alert-danger">Invalid username or password.</div>
+        <input type="email" id="email" name="email" [(ngModel)]="credentials.email" class="form-control form-text my-3" placeholder="Email" />
+        <input type="password" id="password" name="password" [(ngModel)]="credentials.password" class="form-control form-text my-3" placeholder="Password" />
+        <button class="btn btn-lg btn-primary w-100 my-3" [disabled]="!loginForm.valid">Login</button>
+      </form>
+    </div>
+  </div>
+</div>

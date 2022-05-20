@@ -17,21 +17,21 @@ namespace Web.Controllers
             _jwtHandler = jwtHandler;
         }
 
-        public async Task<IActionResult> Login([FromBody] UserAuthenticationRequestDto userAuthentication)
+        public async Task<IActionResult> Login([FromBody] LoginRequest userAuthentication)
         {
             if (userAuthentication == null)
                 return BadRequest();
             var user = await _userManager.FindByEmailAsync(userAuthentication.Email);
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, userAuthentication.Password))
-                return Unauthorized(new UserAuthenticationResultDto { ErrorMessage = "Invalid Authentication" });
+                return Unauthorized(new LoginResult { ErrorMessage = "Invalid Authentication" });
 
             var signingCredentials = _jwtHandler.GetSigningCredentials();
             var claims = _jwtHandler.GetClaims(user);
             var tokenOptions = _jwtHandler.GenerateTokenOptions(signingCredentials, claims);
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
-            return Ok(new UserAuthenticationResultDto { IsAuthSuccessful = true, Token = token });
+            return Ok(new LoginResult { Token = token });
         }
     }
 }
