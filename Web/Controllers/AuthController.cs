@@ -6,7 +6,9 @@ using Web.Services;
 
 namespace Web.Controllers
 {
-    public class AuthController : Controller
+    [ApiController]
+    [Route("api/[controller]/[action]")]
+    public class AuthController : ControllerBase
     {
         private UserManager<IdentityUser> _userManager;
         private JwtHandler _jwtHandler;
@@ -26,10 +28,7 @@ namespace Web.Controllers
             if (user == null || !await _userManager.CheckPasswordAsync(user, userAuthentication.Password))
                 return Unauthorized(new LoginResult { ErrorMessage = "Invalid Authentication" });
 
-            var signingCredentials = _jwtHandler.GetSigningCredentials();
-            var claims = _jwtHandler.GetClaims(user);
-            var tokenOptions = _jwtHandler.GenerateTokenOptions(signingCredentials, claims);
-            var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            var token = await _jwtHandler.GenerateAccessToken(user.Id);
 
             return Ok(new LoginResult { Token = token });
         }

@@ -20,7 +20,7 @@ builder.Services.AddRazorPages();
 //Identity Framework Core
 var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
 builder.Services.AddDbContext<AppIdentityContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-builder.Services.AddIdentityCore<IdentityUser>(options =>
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = false;
     options.Password.RequireNonAlphanumeric = false;
@@ -29,40 +29,31 @@ builder.Services.AddIdentityCore<IdentityUser>(options =>
     options.SignIn.RequireConfirmedAccount = false;
     options.Stores.MaxLengthForKeys = 85;
 })
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<AppIdentityContext>();
+    .AddEntityFrameworkStores<AppIdentityContext>()
+    .AddDefaultTokenProviders();
 
 //JWT
 builder.Services.AddScoped<JwtHandler>();
-builder.Services.AddAuthentication(opt =>
+builder.Services.AddAuthentication(options =>
 {
-    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(opt =>
 {
     opt.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwtSettings["validIssuer"],
         ValidAudience = jwtSettings["validAudience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-            .GetBytes(jwtSettings.GetSection("securityKey").Value))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes((jwtSettings["securityKey"])))
     };
 });
 
 //CORS configuration
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("EnableCORS", builder =>
-    {
-        builder.AllowAnyOrigin()
-        .AllowAnyHeader()
-        .AllowAnyMethod();
-    });
-});
+builder.Services.AddCors();
 //TODO: Analyze security risks of CORS changes
 
 
@@ -76,21 +67,23 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
 app.UseHttpsRedirection();
+
+app.UseCors(builder => builder.WithOrigins("https://localhost:44412").AllowAnyMethod().AllowAnyHeader());
 
 app.UseFileServer();
 
 app.UseRouting();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller}/{action=Index}/{id?}");
-app.MapRazorPages();
-
-app.UseCors("EnableCORS");
-
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapRazorPages();
+
 
 
 DatabaseInitializer.CreateOrMigrate(app);

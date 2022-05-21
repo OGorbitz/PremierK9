@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { JwtModule } from '@auth0/angular-jwt';
 
@@ -13,8 +13,10 @@ import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { UnitComponent } from './unit/unit.component';
 import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './guard/auth.guard';
+import { AuthInterceptor } from './_interceptors/auth-interceptor.service';
 
 export function tokenGetter() {
+  console.log("tokengetter called for " + localStorage.getItem("jwt"));
   return localStorage.getItem("jwt");
 }
 
@@ -47,7 +49,11 @@ export function tokenGetter() {
       }
     })
   ],
-  providers: [],
+  providers: [{
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthInterceptor,
+    multi: true
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

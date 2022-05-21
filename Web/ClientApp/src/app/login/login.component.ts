@@ -1,7 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 import { NavMenuService } from '../nav-menu/nav-menu.service';
 import { LoginModel } from '../_interfaces/loginModel';
 import { LoginResult } from '../_interfaces/loginResponseModel';
@@ -24,7 +25,7 @@ export class LoginComponent implements OnInit {
 
   login = (form: NgForm) => {
     if (form.valid) {
-      this.http.post<LoginResult>("https://localhost:44312/auth/login", this.credentials, {
+      this.http.post<LoginResult>(environment.apiUrl + "auth/login", this.credentials, {
         headers: new HttpHeaders({"Content-Type": "application/json"})
       })
         .subscribe({
