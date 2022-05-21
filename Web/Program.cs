@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Web.Data;
 using Web.Services;
+using static Web.Services.JwtHandler;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,13 +71,16 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors(builder => builder.WithOrigins("https://localhost:44412").AllowAnyMethod().AllowAnyHeader());
-
 app.UseFileServer();
 
 app.UseRouting();
 
+app.UseCors(builder => builder.WithOrigins("https://localhost:44412").AllowAnyMethod().AllowAnyHeader());
+
+
+
 app.UseAuthentication();
+app.UseCustomJwtMiddleware();
 app.UseAuthorization();
 
 app.MapControllerRoute(

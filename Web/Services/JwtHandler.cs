@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Web.Data;
 
 namespace Web.Services
 {
-    public class JwtHandler
+    public partial class JwtHandler
     {
         private readonly IConfiguration _configuration;
         private readonly IConfigurationSection _jwtSettings;
@@ -26,9 +26,8 @@ namespace Web.Services
             var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature);
 
             var claimsIdentity = new ClaimsIdentity(new[] {
-                new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+                new Claim(ClaimTypes.Name, userId.ToString()),
             });
-
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -51,6 +50,38 @@ namespace Web.Services
 
             var refreshToken = Convert.ToBase64String(secureRandomBytes);
             return refreshToken;
+        }
+
+        public string ValidateToken(string token)
+        {
+            if (token == null)
+                return null;
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_jwtSettings["securityKey"]);
+            try
+            {
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = _jwtSettings["validIssuer"],
+                    ValidAudience = _jwtSettings["validAudience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                }, out SecurityToken validatedToken);
+
+                var jwtToken = (JwtSecurityToken)validatedToken;
+                var userId = jwtToken.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+
+                // return user id from JWT token if validation successful
+                return userId;
+            }
+            catch
+            {
+                // return null if validation fails
+                return null;
+            }
         }
     }
 }
