@@ -13,7 +13,7 @@ namespace Web.Data
                 try
                 {
                     //var context = services.GetRequiredService<AppDbContext>();
-                    var identityContext = services.GetRequiredService<AppIdentityContext>();
+                    var identityContext = services.GetRequiredService<AppDbContext>();
                     var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
                     var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 

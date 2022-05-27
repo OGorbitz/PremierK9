@@ -1,5 +1,5 @@
-﻿using Mobile.Views;
-using Shared;
+﻿using Mobile.Models;
+using Mobile.Views;
 using System;
 using System.Collections;
 using System.Collections.Generic;

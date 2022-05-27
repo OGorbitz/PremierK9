@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace Shared
+namespace Mobile.Models
 {
     public enum Status { CLOSED, AUTO_OPENED, MAN_OPENED, OFFLINE }
 
@@ -34,5 +35,8 @@ namespace Shared
         /// The time the status was fetched from the server
         /// </summary>
         public DateTime UpdatedTime { get; set; }
+        /// <summary>
+        /// List of authorizations for this unit
+        /// </summary>
     }
 }

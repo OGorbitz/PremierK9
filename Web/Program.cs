@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Web.Data;
-using Web.Services;
-using static Web.Services.JwtHandler;
+using Web.Helpers;
+using Web.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +20,7 @@ builder.Services.AddRazorPages();
 
 //Identity Framework Core
 var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
-builder.Services.AddDbContext<AppIdentityContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = false;
@@ -30,11 +30,12 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     options.SignIn.RequireConfirmedAccount = false;
     options.Stores.MaxLengthForKeys = 85;
 })
-    .AddEntityFrameworkStores<AppIdentityContext>()
+    .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
 //JWT
-builder.Services.AddScoped<JwtHandler>();
+builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<TokenHelper>();
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

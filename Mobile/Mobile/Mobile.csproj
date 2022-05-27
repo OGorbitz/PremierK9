@@ -21,10 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Shared\Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\Mobile.Android\Resources\drawable\premierk9.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
