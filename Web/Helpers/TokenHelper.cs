@@ -5,13 +5,13 @@ using System.Security.Cryptography;
 using System.Text;
 using Web.Data;
 
-namespace Web.Services
+namespace Web.Helpers
 {
-    public partial class JwtHandler
+    public partial class TokenHelper
     {
         private readonly IConfiguration _configuration;
         private readonly IConfigurationSection _jwtSettings;
-        public JwtHandler(IConfiguration configuration)
+        public TokenHelper(IConfiguration configuration)
         {
             _configuration = configuration;
             _jwtSettings = _configuration.GetSection("JwtSettings");
@@ -26,7 +26,7 @@ namespace Web.Services
             var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature);
 
             var claimsIdentity = new ClaimsIdentity(new[] {
-                new Claim(ClaimTypes.Name, userId.ToString()),
+                new Claim(ClaimTypes.Name, userId),
             });
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -41,7 +41,7 @@ namespace Web.Services
 
             return await System.Threading.Tasks.Task.Run(() => tokenHandler.WriteToken(securityToken));
         }
-        public static async Task<string> GenerateRefreshToken()
+        public async Task<string> GenerateRefreshToken()
         {
             var secureRandomBytes = new byte[32];
 

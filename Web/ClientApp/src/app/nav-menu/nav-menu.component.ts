@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { UserService } from '../_services/user.service';
 import { NavMenuService } from './nav-menu.service';
 
 @Component({
@@ -10,7 +11,7 @@ import { NavMenuService } from './nav-menu.service';
 export class NavMenuComponent {
   isExpanded = false;
 
-  constructor(private router: Router, public nav: NavMenuService) {}
+  constructor(private router: Router, public nav: NavMenuService, public user: UserService) { }
 
   collapse() {
     this.isExpanded = false;
@@ -21,7 +22,6 @@ export class NavMenuComponent {
   }
 
   logOut = () => {
-    localStorage.removeItem("jwt");
-    this.router.navigate(["/login"]);
+    this.user.logout();
   }
 }

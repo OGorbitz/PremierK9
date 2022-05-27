@@ -13,7 +13,7 @@ import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { UnitComponent } from './unit/unit.component';
 import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './guard/auth.guard';
-import { AuthInterceptor } from './_interceptors/auth-interceptor.service';
+import { AuthInterceptor } from './_interceptors/auth-interceptor';
 
 export function tokenGetter() {
   console.log("tokengetter called for " + localStorage.getItem("jwt"));
@@ -49,11 +49,7 @@ export function tokenGetter() {
       }
     })
   ],
-  providers: [{
-    provide: HTTP_INTERCEPTORS,
-    useClass: AuthInterceptor,
-    multi: true
-  }],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

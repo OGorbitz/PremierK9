@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Shared;
+using Web.Data;
 
 namespace Web.Controllers
 {
@@ -8,10 +10,25 @@ namespace Web.Controllers
     public class UnitController : ControllerBase
     {
         private readonly ILogger<UnitController> _logger;
+        private readonly AppDbContext _dbContext;
 
-        public UnitController(ILogger<UnitController> logger)
+        public UnitController(ILogger<UnitController> logger, AppDbContext dbContext)
         {
             _logger = logger;
+            _dbContext = dbContext;
+        }
+
+        public Unit GetUnit(string id)
+        {
+            var unitId = Guid.Parse(id);
+            return new Unit()
+            {
+                ID = unitId,
+                Name = "Unit K87",
+                Temperature = 102.5f,
+                UnitStatus = Shared.Status.CLOSED,
+                FanStatus = true
+            };
         }
 
         public IEnumerable<Unit> GetUnits()
@@ -45,6 +62,25 @@ namespace Web.Controllers
             });
 
             return units.ToArray();
+        }
+
+        public Unit UnitOpen(string Id)
+        {
+            Unit? unit = _dbContext.Units
+                .Include(unit => unit.Authorizations)
+                .ThenInclude(unit => unit.User)
+                .First(unit => unit.ID == Guid.Parse(Id));
+
+            //TODO: Add logic to authorize user and perform request
+
+            return new Unit()
+            {
+                ID = Guid.Parse(Id),
+                Name = "Unit K87",
+                Temperature = 102.5f,
+                UnitStatus = Shared.Status.MAN_OPENED,
+                FanStatus = true
+            };
         }
     }
 }

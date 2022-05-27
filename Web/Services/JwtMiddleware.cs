@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
-namespace Web.Services
+namespace Web.Helpers
 {
     public class JwtMiddleware
     {
