@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Web.Data;
 
 namespace Web.Helpers
 {
@@ -13,7 +14,7 @@ namespace Web.Helpers
         }
 
         //Fetch user roles from identity core
-        public async Task Invoke(HttpContext context, UserManager<IdentityUser> userManager)
+        public async Task Invoke(HttpContext context, UserManager<AppIdentityUser> userManager)
         {
             var user = await userManager.FindByIdAsync(context.User.Identity.Name);
 

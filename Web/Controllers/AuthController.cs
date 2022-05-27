@@ -13,11 +13,11 @@ namespace Web.Controllers
     [Route("api/[controller]/[action]")]
     public class AuthController : ControllerBase
     {
-        private UserManager<IdentityUser> _userManager;
+        private UserManager<AppIdentityUser> _userManager;
         private TokenService _tokenService;
         private AppDbContext _dbContext;
 
-        public AuthController(UserManager<IdentityUser> userManager, TokenService tokenService, AppDbContext dbContext)
+        public AuthController(UserManager<AppIdentityUser> userManager, TokenService tokenService, AppDbContext dbContext)
         {
             _userManager = userManager;
             _tokenService = tokenService;
@@ -25,7 +25,7 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
             if (loginRequest == null)
                 return BadRequest(new TokenResponse
@@ -85,7 +85,6 @@ namespace Web.Controllers
         public async Task<IActionResult> Logout(string userId)
         {
             var refreshToken = await _dbContext.RefreshTokens.FirstOrDefaultAsync(o => o.UserId == userId);
-
             if (refreshToken == null)
             {
                 return Ok(new LogoutResponse { Success = true });

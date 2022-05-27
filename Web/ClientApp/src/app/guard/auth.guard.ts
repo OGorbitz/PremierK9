@@ -1,27 +1,49 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { Observable } from 'rxjs';
-import { JwtHelperService } from '@auth0/angular-jwt';
+import { EMPTY, Observable } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { ErrorResponse } from '../_responses/error-response';
+import { TokenResponse } from '../_responses/token-response';
+import { TokenService } from '../_services/token.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
-
-  constructor(private router: Router, private jwtHelper: JwtHelperService) { }
-
+  constructor(private router: Router, private tokenService: TokenService) { }
   canActivate(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree
-  {
-    const token = localStorage.getItem("jwt");
+    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
-    if (token && ~this.jwtHelper.isTokenExpired(token)) {
-      return true;
+    let session = this.tokenService.getSession();
+    if (session == null) {
+      this.router.navigate(['/login']);
+      return false;
     }
 
-    this.router.navigate(["login"]);
-    return false;
+    if (!this.tokenService.isLoggedIn()) {
+
+      console.log(`session is expired, let's renew the tokens`);
+      // refresh token
+      return this.checkSession(session);
+    }
+    return true;
   }
-  
+
+  checkSession(session: TokenResponse): Observable<boolean> {
+    return this.tokenService.refreshToken(session).pipe(
+      map(data => {
+        console.log(`refreshToken repsonse is ${JSON.stringify(data)}`);
+        this.tokenService.saveSession(data);
+        return true;
+      }),
+      catchError((error: ErrorResponse) => {
+        console.log(`inside checkSession ${JSON.stringify(error)}`);
+        this.router.navigate(['/login']);
+        return EMPTY;
+      })
+    ) as Observable<boolean>;
+
+  }
+
 }
