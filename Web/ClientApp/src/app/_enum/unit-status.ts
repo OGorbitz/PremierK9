@@ -1,4 +1,4 @@
-﻿export enum UnitStatus {
+export enum UnitStatus {
     CLOSED,
     AUTO_OPENED,
     MAN_OPENED,

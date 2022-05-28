@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserService } from '../_services/user.service';
+import { TokenService } from '../_services/token.service';
 import { NavMenuService } from './nav-menu.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { NavMenuService } from './nav-menu.service';
 export class NavMenuComponent {
   isExpanded = false;
 
-  constructor(private router: Router, public nav: NavMenuService, public user: UserService) { }
+  constructor(private router: Router, public nav: NavMenuService, public tokenService: TokenService) { }
 
   collapse() {
     this.isExpanded = false;
@@ -22,6 +22,6 @@ export class NavMenuComponent {
   }
 
   logOut = () => {
-    this.user.logout();
+    this.tokenService.logout();
   }
 }

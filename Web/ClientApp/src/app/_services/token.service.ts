@@ -1,14 +1,18 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { share } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
+import { LoginRequest } from '../_requests/login-request';
 import { TokenResponse } from '../_responses/token-response';
-import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TokenService {
 
-  constructor(private userService: UserService) { }
+  constructor(private router: Router, private http: HttpClient) { }
 
   saveSession(tokenResponse: TokenResponse) {
 
@@ -37,6 +41,7 @@ export class TokenService {
 
   logout() {
     window.localStorage.clear();
+    this.router.navigate(["/login"]);
   }
 
   isLoggedIn(): boolean {
@@ -53,8 +58,39 @@ export class TokenService {
 
   }
 
-  refreshToken(session: TokenResponse): Observable<TokenResponse> {
-    return this.userService.refreshToken(session);
+  login(loginRequest: LoginRequest): Observable<TokenResponse> {
+    let obs = this.http.post<TokenResponse>(environment.apiUrl + "auth/login", loginRequest, {
+      headers: new HttpHeaders({ "Content-Type": "application/json" })
+    }).pipe(share())
+    obs.subscribe({
+      next: (response: TokenResponse) => {
+        console.debug(`logged in successfully ${response}`);
+        this.saveSession(response);
+      }
+    })
+    return obs;
+  }
+
+  refreshToken(): Observable<TokenResponse> | boolean{
+    let session = this.getSession();
+    if (!session) {
+      return false;
+      window.localStorage.clear();
+      this.router.navigate(["/login"]);
+    }
+
+    let refreshTokenRequest: any = {
+      UserId: session.userId,
+      RefreshToken: session.refreshToken
+    };
+    let obs = this.http.post<TokenResponse>(`${environment.apiUrl}auth/refreshToken`, refreshTokenRequest).pipe(share());
+    obs.subscribe({
+      next: (response: TokenResponse) => {
+        console.debug(`Refreshed session successfully ${response}`);
+        this.saveSession(response);
+      }
+    })
+    return obs;
   }
 
 }

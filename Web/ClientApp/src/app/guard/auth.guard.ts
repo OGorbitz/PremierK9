@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { EMPTY, Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { NavMenuService } from '../nav-menu/nav-menu.service';
 import { ErrorResponse } from '../_responses/error-response';
 import { TokenResponse } from '../_responses/token-response';
 import { TokenService } from '../_services/token.service';
@@ -10,7 +11,7 @@ import { TokenService } from '../_services/token.service';
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
-  constructor(private router: Router, private tokenService: TokenService) { }
+  constructor(private router: Router, private tokenService: TokenService, private nav: NavMenuService) { }
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
@@ -24,26 +25,24 @@ export class AuthGuard implements CanActivate {
     if (!this.tokenService.isLoggedIn()) {
 
       console.log(`session is expired, let's renew the tokens`);
+
       // refresh token
-      return this.checkSession(session);
+      let obs = this.tokenService.refreshToken();
+      if (obs instanceof Observable)
+        obs.pipe(
+          map(data => {
+            console.log(`refreshToken repsonse is ${JSON.stringify(data)}`);
+            return true;
+          }),
+          catchError((error: ErrorResponse) => {
+            console.log(`inside checkSession ${JSON.stringify(error)}`);
+            this.router.navigate(['/login']);
+            this.nav.hide();
+            return EMPTY;
+          })
+      ) as Observable<boolean>;
     }
     return true;
-  }
-
-  checkSession(session: TokenResponse): Observable<boolean> {
-    return this.tokenService.refreshToken(session).pipe(
-      map(data => {
-        console.log(`refreshToken repsonse is ${JSON.stringify(data)}`);
-        this.tokenService.saveSession(data);
-        return true;
-      }),
-      catchError((error: ErrorResponse) => {
-        console.log(`inside checkSession ${JSON.stringify(error)}`);
-        this.router.navigate(['/login']);
-        return EMPTY;
-      })
-    ) as Observable<boolean>;
-
   }
 
 }

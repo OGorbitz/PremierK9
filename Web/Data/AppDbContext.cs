@@ -25,8 +25,6 @@ namespace Web.Data
             builder.Entity<RefreshToken>(entity =>
             {
 
-                entity.Property(e => e.ExpiryDate).HasColumnType("smalldatetime");
-
                 entity.Property(e => e.TokenHash)
                     .IsRequired()
                     .HasMaxLength(1000);
@@ -34,10 +32,6 @@ namespace Web.Data
                 entity.Property(e => e.TokenSalt)
                     .IsRequired()
                     .HasMaxLength(1000);
-
-                entity.Property(e => e.Ts)
-                    .HasColumnType("smalldatetime")
-                    .HasColumnName("TS");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.RefreshTokens)

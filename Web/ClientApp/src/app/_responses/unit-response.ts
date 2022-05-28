@@ -1,11 +1,11 @@
 import { UnitStatus } from "../_enum/unit-status";
 
 export interface UnitResponse {
-  ID: string;
-  Name: string;
-  OrganizationID: string;
-  Temperature: number;
-  UnitStatus: UnitStatus;
-  FanStatus: boolean;
-  UpdatedTime: Date;
+  id: string;
+  name: string;
+  organizationID: string;
+  temperature: number;
+  unitStatus: UnitStatus;
+  fanStatus: boolean;
+  updatedTime: Date;
 }

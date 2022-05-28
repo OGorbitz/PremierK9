@@ -1,0 +1,39 @@
+<a class="row text-decoration-none text-dark fw-bold border bg-gradient p-3 p-md-1 align-content-center" href="#">
+  <div class="col mb-0 p-2 p-md-3 d-flex justify-content-start h4">
+    {{unit.name}}
+  </div>
+
+  <div class="col d-flex flex-row justify-content-end justify-content-md-center align-items-center">
+    <div class="d-flex p-2 bg-gradient rounded-pill m-md-1 fw-bold text-center shadow border" innerHTML="{{status()}}">
+    </div>
+  </div>
+
+  <hr class="d-md-none my-3" />
+
+  <div class="col d-flex flex-row justify-content-start justify-content-md-center align-items-center">
+    <div class="d-flex flex-column">
+      <div class="d-flex d-md-none fw-bold px-2">
+        Temp:
+      </div>
+      <hr class="d-flex d-md-none m-1" />
+      <div class="d-flex text-nowrap px-2 p-md-3 col-md-4" innerHTML="{{temp()}}">
+      </div>
+    </div>
+  </div>
+
+  <div class="col d-flex flex-row justify-content-end justify-content-md-center align-items-center">
+    <div class="d-flex flex-column">
+      <div class="d-flex d-md-none fw-bold px-2">
+        Fan Status:
+      </div>
+      <hr class="d-flex d-md-none m-1" />
+
+      <div class="d-flex text-nowrap px-2 p-md-3 col-md-4" innerHTML="{{fan()}}">
+      </div>
+    </div>
+  </div>
+
+
+</a>
+<br class="d-md-none my-5" />
+<br class="d-md-none my-5" />

@@ -8,10 +8,32 @@
 
     </div>
     <div class="card-body">
-      <form #loginForm="ngForm" (ngSubmit)="login(loginForm)">
-        <div *ngIf="invalidLogin" class="alert alert-danger">Invalid username or password.</div>
-        <input type="email" id="email" name="email" [(ngModel)]="credentials.email" class="form-control form-text my-3" placeholder="Email" />
-        <input type="password" id="password" name="password" [(ngModel)]="credentials.password" class="form-control form-text my-3" placeholder="Password" />
+      <div class="alert-danger my-2 p-2 rounded" *ngIf="errorMessage != ''">
+        {{errorMessage}}
+      </div>
+      <form novalidate [formGroup]="loginForm" (ngSubmit)="login(loginForm)">
+        <div class="form-group rounded my-2"
+             [ngClass]="{  'alert-danger': email.invalid && (email.dirty || email.touched)}">
+          <input type="email" class="form-control" formControlName="email" placeholder="Email" required
+                 [ngClass]="{'border-danger': email.invalid && (email.dirty || email.touched)}">
+          <div class="form-control-feedback p-2"
+               *ngIf="email.errors && (email.dirty || email.touched)">
+            <span *ngIf="email.errors.required">Email is required</span>
+            <span *ngIf="email.errors.pattern">Email must contain @</span>
+          </div>
+        </div>
+
+        <div class="form-group rounded"
+             [ngClass]="{'alert-danger': password.invalid && (password.dirty || password.touched)}">
+          <input type="password" class="form-control" formControlName="password" required placeholder="Password"
+                 [ngClass]="{'border-danger': password.invalid && (password.dirty || password.touched)}">
+          <div class="form-control-feedback"
+               *ngIf="password.errors && (password.dirty || password.touched)">
+            <span *ngIf="password.errors.required">Password is required</span>
+            <span *ngIf="password.errors.minlength">Password must be 8 characters long, we need another {{password.errors.minlength.requiredLength - password.errors.minlength.actualLength}} characters </span>
+          </div>
+        </div>
+
         <button class="btn btn-lg btn-primary w-100 my-3" [disabled]="!loginForm.valid">Login</button>
       </form>
     </div>

@@ -76,9 +76,16 @@ namespace Web.Controllers
                 return UnprocessableEntity(validateRefreshTokenResponse);
             }
 
-            var tokenResponse = await _tokenService.GenerateTokensAsync(validateRefreshTokenResponse.UserId);
+            var token = await _tokenService.GenerateTokensAsync(validateRefreshTokenResponse.UserId);
 
-            return Ok(new { AccessToken = tokenResponse.Item1, Refreshtoken = tokenResponse.Item2 });
+            return Ok(new TokenResponse
+            {
+                Success = true,
+                AccessToken = token.Item1,
+                RefreshToken = token.Item2,
+                UserName = token.Item3,
+                UserId = token.Item4
+            });
         }
 
         [HttpPost]

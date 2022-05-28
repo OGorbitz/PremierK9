@@ -14,7 +14,7 @@ namespace Web.Data
                 {
                     //var context = services.GetRequiredService<AppDbContext>();
                     var identityContext = services.GetRequiredService<AppDbContext>();
-                    var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                    var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<AppIdentityUser>>();
                     var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
                     //context.Database.Migrate();
@@ -28,7 +28,7 @@ namespace Web.Data
 
                     if (!identityContext.Users.Any())
                     {
-                        var adminUser = new IdentityUser
+                        var adminUser = new AppIdentityUser
                         {
                             UserName = "admin@test.com",
                             Email = "admin@test.com",

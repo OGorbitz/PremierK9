@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { UnitResponse } from '../_responses/unit-response';
 
 @Component({
   selector: 'app-unit',
@@ -8,6 +9,8 @@ import { Component, OnInit } from '@angular/core';
 export class UnitComponent implements OnInit {
 
   constructor() { }
+
+
 
   ngOnInit(): void {
   }

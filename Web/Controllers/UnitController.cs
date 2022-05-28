@@ -6,7 +6,7 @@ using Web.Data;
 namespace Web.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class UnitController : ControllerBase
     {
         private readonly ILogger<UnitController> _logger;
@@ -33,25 +33,26 @@ namespace Web.Controllers
 
         public IEnumerable<Unit> GetUnits()
         {
+            var rand = new Random();
             var units = new List<Unit>();
             units.Add(new Unit()
             {
                 Name = "Unit K87",
-                Temperature = 102.5f,
+                Temperature = rand.Next(50, 120),
                 UnitStatus = Shared.Status.CLOSED,
                 FanStatus = true
             });
             units.Add(new Unit()
             {
                 Name = "Unit K98",
-                Temperature = 82.4f,
+                Temperature = rand.Next(50, 120),
                 UnitStatus = Shared.Status.AUTO_OPENED,
                 FanStatus = true
             });
             units.Add(new Unit()
             {
                 Name = "Unit K5",
-                Temperature = 68.3f,
+                Temperature = rand.Next(50, 120),
                 UnitStatus = Shared.Status.MAN_OPENED,
                 FanStatus = false
             });
