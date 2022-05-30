@@ -37,7 +37,7 @@ import { AuthInterceptor } from './_interceptors/auth-interceptor';
       { path: '', component: HomeComponent, pathMatch: 'full', canActivate: [AuthGuard] },
       { path: 'counter', component: CounterComponent, canActivate: [AuthGuard] },
       { path: 'fetch-data', component: FetchDataComponent, canActivate: [AuthGuard]},
-      { path: 'unit', component: UnitComponent, canActivate: [AuthGuard] },
+      { path: 'unit/:id', component: UnitComponent, canActivate: [AuthGuard] },
     ])
   ],
   providers: [
