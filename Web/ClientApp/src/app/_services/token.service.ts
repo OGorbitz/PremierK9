@@ -71,10 +71,10 @@ export class TokenService {
     return obs;
   }
 
-  refreshToken(): Observable<TokenResponse> | boolean{
+  refreshToken(): Observable<TokenResponse> | undefined{
     let session = this.getSession();
     if (!session) {
-      return false;
+      return undefined;
       window.localStorage.clear();
       this.router.navigate(["/login"]);
     }

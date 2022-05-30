@@ -1,85 +1,131 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using Data;
 using Web.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Web.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
+    [Authorize]
     public class UnitController : ControllerBase
     {
         private readonly ILogger<UnitController> _logger;
         private readonly AppDbContext _dbContext;
+        private readonly UserManager<AppIdentityUser> _userManager;
 
-        public UnitController(ILogger<UnitController> logger, AppDbContext dbContext)
+        public UnitController(ILogger<UnitController> logger, AppDbContext dbContext, UserManager<AppIdentityUser> userManager)
         {
             _logger = logger;
             _dbContext = dbContext;
+            _userManager = userManager;
         }
 
-        public Unit GetUnit(string id)
+        public async Task<IActionResult> GetUnit(string id)
         {
+            if (Request.HttpContext.User.Identity == null || Request.HttpContext.User.Identity.Name == null)
+                return Unauthorized();
+
             var unitId = Guid.Parse(id);
-            return new Unit()
+            var unit = _dbContext.Units
+                .Include(u => u.Auths)
+                .ThenInclude(a => a.User)
+                .First(u => u.ID == unitId);
+
+            var userId = Request.HttpContext.User.Identity.Name;
+
+
+            var auth = AuthType.NONE;
+            
+            if (unit.Auths.Count() <= 0)
+                return Unauthorized();
+
+            
+            foreach (var a in unit.Auths)
             {
-                ID = unitId,
-                Name = "Unit K87",
-                Temperature = 102.5f,
-                UnitStatus = Shared.Status.CLOSED,
-                FanStatus = true
-            };
+                if (a.User.Id == userId)
+                    auth = a.AuthType;
+            }
+
+            if (auth == AuthType.OWNER || auth == AuthType.VIEWER || auth == AuthType.USER)
+            {
+                return Ok(unit);
+            }
+
+            return Unauthorized();
+
+            
         }
 
-        public IEnumerable<Unit> GetUnits()
+        public async Task<IActionResult> GetUnits()
         {
+            if (Request.HttpContext.User.Identity == null || Request.HttpContext.User.Identity.Name == null)
+                return Unauthorized();
+
             var rand = new Random();
             var units = new List<Unit>();
-            units.Add(new Unit()
-            {
-                Name = "Unit K87",
-                Temperature = rand.Next(50, 120),
-                UnitStatus = Shared.Status.CLOSED,
-                FanStatus = true
-            });
-            units.Add(new Unit()
-            {
-                Name = "Unit K98",
-                Temperature = rand.Next(50, 120),
-                UnitStatus = Shared.Status.AUTO_OPENED,
-                FanStatus = true
-            });
-            units.Add(new Unit()
-            {
-                Name = "Unit K5",
-                Temperature = rand.Next(50, 120),
-                UnitStatus = Shared.Status.MAN_OPENED,
-                FanStatus = false
-            });
-            units.Add(new Unit()
-            {
-                Name = "Unit K28",
-                UnitStatus = Shared.Status.OFFLINE
-            });
 
-            return units.ToArray();
+            var userId = Request.HttpContext.User.Identity.Name;
+            var user = _userManager.Users
+                .Include(u => u.UnitAuths)
+                .ThenInclude(a => a.Unit)
+                .First(u => u.Id == userId);
+
+            if(user != null && user.UnitAuths == null)
+            {
+                var u = new Unit()
+                {
+                    Name = "Seeded Unit",
+                    Temperature = rand.Next(50, 120),
+                    UnitStatus = global::Data.Status.CLOSED,
+                    FanStatus = true
+                };
+                var a = new UnitAuth()
+                {
+                    Unit = u,
+                    User = user,
+                    AuthType = AuthType.OWNER,
+                    Id = Guid.NewGuid()
+                };
+                user.UnitAuths = new List<UnitAuth>();
+                user.UnitAuths.Add(a);
+
+                _dbContext.Users.Update(user);
+                _dbContext.Units.Add(u);
+                _dbContext.UnitAuths.Add(a);
+                await _dbContext.SaveChangesAsync();
+            }
+
+            if(user != null && user.UnitAuths != null)
+                user.UnitAuths.ForEach(a =>
+                {
+                    if (a.User == user && a.AuthType != AuthType.NONE)
+                        units.Add(a.Unit);
+                });
+
+            return Ok(units.ToArray());
+
         }
 
         public Unit UnitOpen(string Id)
         {
             Unit? unit = _dbContext.Units
-                .Include(unit => unit.Authorizations)
+                .Include(unit => unit.Auths)
                 .ThenInclude(unit => unit.User)
                 .First(unit => unit.ID == Guid.Parse(Id));
 
             //TODO: Add logic to authorize user and perform request
+
+
 
             return new Unit()
             {
                 ID = Guid.Parse(Id),
                 Name = "Unit K87",
                 Temperature = 102.5f,
-                UnitStatus = Shared.Status.MAN_OPENED,
+                UnitStatus = global::Data.Status.MAN_OPENED,
                 FanStatus = true
             };
         }

@@ -34,7 +34,7 @@ export class HomeComponent {
       if (response) {
         this.units = response;
       }
-    }, error => console.error(error));
+    }, error => { console.error(error) });
   }
 
 }

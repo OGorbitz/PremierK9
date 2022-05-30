@@ -1,4 +1,17 @@
 <h1>Your Units:</h1>
 <br />
-
+<div class="d-none d-md-flex row row-cols-4 text-decoration-none text-white fw-bold bg-dark">
+  <div class="col p-3">
+    Unit Name
+  </div>
+  <div class="col p-3 text-center">
+    Unit Status
+  </div>
+  <div class="col p-3 text-center">
+    Unit Temperature (F)
+  </div>
+  <div class="col p-3 text-center">
+    Fan Status
+  </div>
+</div>
 <app-unit-card *ngFor="let unit of units" [unit]="unit"></app-unit-card>

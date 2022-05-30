@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Web.Data;
 
-namespace Shared
+namespace Data
 {
     public enum Status { CLOSED, AUTO_OPENED, MAN_OPENED, OFFLINE }
-
     public class Unit
     {
         /// <summary>
@@ -38,6 +38,6 @@ namespace Shared
         /// <summary>
         /// List of authorizations for this unit
         /// </summary>
-        public List<UnitAuthorization> Authorizations { get; set; }
+        public List<UnitAuth> Auths { get; set; }
     }
 }

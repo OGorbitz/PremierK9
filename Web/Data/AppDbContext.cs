@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using Data;
 using Web.Models;
 
 namespace Web.Data
@@ -9,7 +9,7 @@ namespace Web.Data
     public class AppDbContext : IdentityDbContext<AppIdentityUser>
     {
         public DbSet<Unit> Units { get; set; }
-        public DbSet<UnitAuthorization> UnitAuths { get; set; }
+        public DbSet<UnitAuth> UnitAuths { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 
 
@@ -42,12 +42,12 @@ namespace Web.Data
                 entity.ToTable("RefreshToken");
             });
 
-            builder.Entity<UnitAuthorization>(entity =>
+            builder.Entity<UnitAuth>(entity =>
             {
-                entity.HasOne(d => d.User)
-                .WithMany(p => p.UnitAuthorizations);
                 entity.HasOne(d => d.Unit)
-                .WithMany(p => p.Authorizations);
+                .WithMany(p => p.Auths);
+                entity.HasOne(d => d.User)
+                .WithMany(p => p.UnitAuths);
             });
 
             builder.Entity<AppIdentityUser>(entity => entity.Property(m => m.Id).HasMaxLength(85));

@@ -21,27 +21,6 @@ export class AuthGuard implements CanActivate {
       this.router.navigate(['/login']);
       return false;
     }
-
-    if (!this.tokenService.isLoggedIn()) {
-
-      console.log(`session is expired, let's renew the tokens`);
-
-      // refresh token
-      let obs = this.tokenService.refreshToken();
-      if (obs instanceof Observable)
-        obs.pipe(
-          map(data => {
-            console.log(`refreshToken repsonse is ${JSON.stringify(data)}`);
-            return true;
-          }),
-          catchError((error: ErrorResponse) => {
-            console.log(`inside checkSession ${JSON.stringify(error)}`);
-            this.router.navigate(['/login']);
-            this.nav.hide();
-            return EMPTY;
-          })
-      ) as Observable<boolean>;
-    }
     return true;
   }
 
