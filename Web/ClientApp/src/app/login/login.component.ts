@@ -40,9 +40,6 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.location.subscribe((value) => {
-      this.nav.hide();
-    });
   }
 
   validate(): void {
@@ -61,7 +58,6 @@ export class LoginComponent implements OnInit {
             console.debug(`logged in successfully ${response}`);
             this.invalidLogin = false;
             this.router.navigate(["/"]);
-            this.nav.show();
           },
           error: (response: HttpErrorResponse) => {
             this.invalidLogin = true;

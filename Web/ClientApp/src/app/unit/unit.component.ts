@@ -33,6 +33,15 @@ export class UnitComponent implements OnInit {
     }, error => { console.error(error) });
   }
 
+  openBtn() {
+    this.http.get<UnitResponse>(environment.apiUrl + 'unit/openunit?id=' + this.unitId).subscribe(response => {
+      if (response) {
+        this.unit = response;
+        this.unit.updatedTime = new Date(this.unit.updatedTime);
+      }
+    }, error => { console.error(error) });
+  }
+
   updated(): string {
     if (this.unit == null)
       return "";

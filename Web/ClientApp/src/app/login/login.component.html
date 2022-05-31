@@ -27,7 +27,7 @@
              [ngClass]="{'alert-danger': password.invalid && (password.dirty || password.touched)}">
           <input type="password" class="form-control" formControlName="password" required placeholder="Password"
                  [ngClass]="{'border-danger': password.invalid && (password.dirty || password.touched)}">
-          <div class="form-control-feedback"
+          <div class="form-control-feedback p-2"
                *ngIf="password.errors && (password.dirty || password.touched)">
             <span *ngIf="password.errors.required">Password is required</span>
             <span *ngIf="password.errors.minlength">Password must be 8 characters long, we need another {{password.errors.minlength.requiredLength - password.errors.minlength.actualLength}} characters </span>

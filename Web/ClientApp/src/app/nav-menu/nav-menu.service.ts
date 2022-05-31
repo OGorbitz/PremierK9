@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NavMenuService {
-  visible: boolean;
+  private isVisible: boolean = true;
 
-  constructor() { this.visible = true; }
+  constructor(private router: Router) { }
 
-  hide() { this.visible = false; }
+  public visible(): boolean {
+    let vis = !this.router.url.endsWith("login");
+    return vis;
+  }
 
-  show() { this.visible = true; }
-
-  toggle() { this.visible = !this.visible; }
 }

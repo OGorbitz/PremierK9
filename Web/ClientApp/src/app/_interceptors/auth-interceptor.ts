@@ -43,7 +43,6 @@ export class AuthInterceptor implements HttpInterceptor {
           catchError((error: ErrorResponse) => {
             console.log(`inside checkSession ${JSON.stringify(error)}`);
             this.router.navigate(['/login']);
-            this.nav.hide();
             return EMPTY;
           })
         ) as Observable<boolean>;

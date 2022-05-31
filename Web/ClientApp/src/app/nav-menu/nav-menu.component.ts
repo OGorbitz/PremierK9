@@ -9,16 +9,10 @@ import { NavMenuService } from './nav-menu.service';
   styleUrls: ['./nav-menu.component.css']
 })
 export class NavMenuComponent {
-  isExpanded = false;
 
-  constructor(private router: Router, public nav: NavMenuService, public tokenService: TokenService) { }
+  constructor(private router: Router, public nav: NavMenuService, private tokenService: TokenService) { }
 
-  collapse() {
-    this.isExpanded = false;
-  }
-
-  toggle() {
-    this.isExpanded = !this.isExpanded;
+  ngOnInit() {
   }
 
   logOut = () => {

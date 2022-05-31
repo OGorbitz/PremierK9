@@ -109,25 +109,39 @@ namespace Web.Controllers
 
         }
 
-        public Unit UnitOpen(string Id)
+        public async Task<IActionResult> OpenUnit(string id)
         {
-            Unit? unit = _dbContext.Units
-                .Include(unit => unit.Auths)
-                .ThenInclude(unit => unit.User)
-                .First(unit => unit.ID == Guid.Parse(Id));
+            if (Request.HttpContext.User.Identity == null || Request.HttpContext.User.Identity.Name == null)
+                return Unauthorized();
 
-            //TODO: Add logic to authorize user and perform request
+            var unitId = Guid.Parse(id);
+            var unit = _dbContext.Units
+                .Include(u => u.Auths)
+                .ThenInclude(a => a.User)
+                .First(u => u.ID == unitId);
+
+            var userId = Request.HttpContext.User.Identity.Name;
 
 
+            var auth = AuthType.NONE;
 
-            return new Unit()
+            if (unit.Auths.Count() <= 0)
+                return Unauthorized();
+
+
+            foreach (var a in unit.Auths)
             {
-                ID = Guid.Parse(Id),
-                Name = "Unit K87",
-                Temperature = 102.5f,
-                UnitStatus = global::Data.Status.MAN_OPENED,
-                FanStatus = true
-            };
+                if (a.User.Id == userId)
+                    auth = a.AuthType;
+            }
+
+            if (auth == AuthType.OWNER || auth == AuthType.USER)
+            {
+                //Do Opening Logic Here!
+                return Ok(unit);
+            }
+
+            return Unauthorized();
         }
     }
 }

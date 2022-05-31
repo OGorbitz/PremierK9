@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { share } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { NavMenuService } from '../nav-menu/nav-menu.service';
 import { LoginRequest } from '../_requests/login-request';
 import { TokenResponse } from '../_responses/token-response';
 
@@ -12,7 +13,7 @@ import { TokenResponse } from '../_responses/token-response';
 })
 export class TokenService {
 
-  constructor(private router: Router, private http: HttpClient) { }
+  constructor(private router: Router, private http: HttpClient, private nav: NavMenuService) { }
 
   saveSession(tokenResponse: TokenResponse) {
 
