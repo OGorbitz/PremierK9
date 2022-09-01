@@ -24,8 +24,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddSwaggerGen();
 
 //Identity Framework Core
-var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
-builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+var connectionString = builder.Configuration["ConnectionStrings:DatabaseConnection"];
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddIdentity<AppIdentityUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = false;

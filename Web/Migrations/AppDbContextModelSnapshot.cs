@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Web.Data;
 
@@ -17,31 +18,64 @@ namespace Web.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "6.0.5")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("Data.Unit", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("FanStatus")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("OrganizationID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<float>("Temperature")
+                        .HasColumnType("real");
+
+                    b.Property<int>("UnitStatus")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Units");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(85)
-                        .HasColumnType("varchar(85)");
+                        .HasColumnType("nvarchar(85)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(85)
-                        .HasColumnType("varchar(85)");
+                        .HasColumnType("nvarchar(85)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
                 });
@@ -53,16 +87,18 @@ namespace Web.Migrations
                         .HasMaxLength(85)
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
                         .HasMaxLength(85)
-                        .HasColumnType("varchar(85)");
+                        .HasColumnType("nvarchar(85)");
 
                     b.HasKey("Id");
 
@@ -78,16 +114,18 @@ namespace Web.Migrations
                         .HasMaxLength(85)
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasMaxLength(85)
-                        .HasColumnType("varchar(85)");
+                        .HasColumnType("nvarchar(85)");
 
                     b.HasKey("Id");
 
@@ -100,19 +138,19 @@ namespace Web.Migrations
                 {
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(85)
-                        .HasColumnType("varchar(85)");
+                        .HasColumnType("nvarchar(85)");
 
                     b.Property<string>("ProviderKey")
                         .HasMaxLength(85)
-                        .HasColumnType("varchar(85)");
+                        .HasColumnType("nvarchar(85)");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasMaxLength(85)
-                        .HasColumnType("varchar(85)");
+                        .HasColumnType("nvarchar(85)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -125,11 +163,11 @@ namespace Web.Migrations
                 {
                     b.Property<string>("UserId")
                         .HasMaxLength(85)
-                        .HasColumnType("varchar(85)");
+                        .HasColumnType("nvarchar(85)");
 
                     b.Property<string>("RoleId")
                         .HasMaxLength(85)
-                        .HasColumnType("varchar(85)");
+                        .HasColumnType("nvarchar(85)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -142,69 +180,105 @@ namespace Web.Migrations
                 {
                     b.Property<string>("UserId")
                         .HasMaxLength(85)
-                        .HasColumnType("varchar(85)");
+                        .HasColumnType("nvarchar(85)");
 
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(85)
-                        .HasColumnType("varchar(85)");
+                        .HasColumnType("nvarchar(85)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(85)
-                        .HasColumnType("varchar(85)");
+                        .HasColumnType("nvarchar(85)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Shared.Unit", b =>
+            modelBuilder.Entity("Web.Data.AppIdentityUser", b =>
                 {
-                    b.Property<Guid>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(85)
+                        .HasColumnType("nvarchar(85)");
 
-                    b.Property<bool>("FanStatus")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<Guid>("OrganizationID")
-                        .HasColumnType("char(36)");
-
-                    b.Property<float>("Temperature")
-                        .HasColumnType("float");
-
-                    b.Property<int>("UnitStatus")
+                    b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("UpdatedTime")
-                        .HasColumnType("datetime(6)");
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ID");
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                    b.ToTable("Units");
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(85)
+                        .HasColumnType("nvarchar(85)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(85)
+                        .HasColumnType("nvarchar(85)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Shared.UnitAuthorization", b =>
+            modelBuilder.Entity("Web.Data.UnitAuth", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("AuthType")
                         .HasColumnType("int");
 
                     b.Property<Guid>("UnitID")
-                        .HasColumnType("char(36)");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(85)");
+                        .HasColumnType("nvarchar(85)");
 
                     b.HasKey("Id");
 
@@ -215,96 +289,33 @@ namespace Web.Migrations
                     b.ToTable("UnitAuths");
                 });
 
-            modelBuilder.Entity("Web.Data.AppIdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(85)
-                        .HasColumnType("varchar(85)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(85)
-                        .HasColumnType("varchar(85)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(85)
-                        .HasColumnType("varchar(85)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("longtext");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("longtext");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
-
-                    b.ToTable("AspNetUsers", (string)null);
-                });
-
             modelBuilder.Entity("Web.Models.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
                     b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("TokenHash")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("varchar(1000)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("TokenSalt")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("varchar(1000)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<DateTime>("Ts")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(85)");
+                        .HasColumnType("nvarchar(85)");
 
                     b.HasKey("Id");
 
@@ -364,16 +375,16 @@ namespace Web.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Shared.UnitAuthorization", b =>
+            modelBuilder.Entity("Web.Data.UnitAuth", b =>
                 {
-                    b.HasOne("Shared.Unit", "Unit")
-                        .WithMany("Authorizations")
+                    b.HasOne("Data.Unit", "Unit")
+                        .WithMany("Auths")
                         .HasForeignKey("UnitID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Web.Data.AppIdentityUser", "User")
-                        .WithMany("UnitAuthorizations")
+                        .WithMany("UnitAuths")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -394,16 +405,16 @@ namespace Web.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Shared.Unit", b =>
+            modelBuilder.Entity("Data.Unit", b =>
                 {
-                    b.Navigation("Authorizations");
+                    b.Navigation("Auths");
                 });
 
             modelBuilder.Entity("Web.Data.AppIdentityUser", b =>
                 {
                     b.Navigation("RefreshTokens");
 
-                    b.Navigation("UnitAuthorizations");
+                    b.Navigation("UnitAuths");
                 });
 #pragma warning restore 612, 618
         }

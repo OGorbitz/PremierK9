@@ -73,7 +73,7 @@ namespace Web.Controllers
                 .ThenInclude(a => a.Unit)
                 .First(u => u.Id == userId);
 
-            if(user != null && user.UnitAuths == null)
+            if(user != null && user.UnitAuths.Count == 0)
             {
                 var u = new Unit()
                 {

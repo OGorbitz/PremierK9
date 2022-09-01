@@ -2,30 +2,30 @@
   {
     "outputFileName": "wwwroot/css/vendor.css",
     "inputFiles": [
-      "../../../../.nuget/packages/fontawesome/4.7.0/Content/Content/font-awesome.css",
-      "../../../../.nuget/packages/bootstrap/5.1.3/contentFiles/any/any/wwwroot/css/bootstrap.css"
+      "../../../../../.nuget/packages/fontawesome/4.7.0/Content/Content/font-awesome.css",
+      "../../../../../.nuget/packages/bootstrap/5.1.3/contentFiles/any/any/wwwroot/css/bootstrap.css"
     ]
   },
   {
     "outputFileName": "wwwroot/js/vendor.js",
     "inputFiles": [
-      "../../../../.nuget/packages/bootstrap/5.1.3/contentFiles/any/any/wwwroot/js/bootstrap.js",
-      "../../../../.nuget/packages/popper.js/1.16.1/content/Scripts/umd/popper.js"
+      "../../../../../.nuget/packages/bootstrap/5.1.3/contentFiles/any/any/wwwroot/js/bootstrap.js",
+      "../../../../../.nuget/packages/popper.js/1.16.1/content/Scripts/umd/popper.js"
     ]
   },
   {
     "outputFileName": "wwwroot/css/vendor.min.css",
     "inputFiles": [
-      "../../../../.nuget/packages/fontawesome/4.7.0/Content/Content/font-awesome.css",
-      "../../../../.nuget/packages/bootstrap/5.1.3/contentFiles/any/any/wwwroot/css/bootstrap.css"
+      "../../../../../.nuget/packages/fontawesome/4.7.0/Content/Content/font-awesome.css",
+      "../../../../../.nuget/packages/bootstrap/5.1.3/contentFiles/any/any/wwwroot/css/bootstrap.css"
     ],
     "minify": {"enabled": true}
   },
   {
     "outputFileName": "wwwroot/js/vendor.min.js",
     "inputFiles": [
-      "../../../../.nuget/packages/bootstrap/5.1.3/contentFiles/any/any/wwwroot/js/bootstrap.js",
-      "../../../../.nuget/packages/popper.js/1.16.1/content/Scripts/umd/popper.js"
+      "../../../../../.nuget/packages/bootstrap/5.1.3/contentFiles/any/any/wwwroot/js/bootstrap.js",
+      "../../../../../.nuget/packages/popper.js/1.16.1/content/Scripts/umd/popper.js"
     ],
     "minify": { "enabled": true }
   }
