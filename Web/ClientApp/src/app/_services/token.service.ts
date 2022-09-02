@@ -6,6 +6,7 @@ import { share } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { NavMenuService } from '../nav-menu/nav-menu.service';
 import { LoginRequest } from '../_requests/login-request';
+import { ErrorResponse } from '../_responses/error-response';
 import { TokenResponse } from '../_responses/token-response';
 
 @Injectable({
@@ -89,6 +90,10 @@ export class TokenService {
       next: (response: TokenResponse) => {
         console.debug(`Refreshed session successfully ${response}`);
         this.saveSession(response);
+      },
+      error: (response: ErrorResponse) => {
+        console.debug(`Error refreshing session ${response}`);
+        this.logout();
       }
     })
     return obs;

@@ -78,16 +78,23 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    app.UseCors(builder => builder.WithOrigins("https://localhost:44412").AllowAnyMethod().AllowAnyHeader());
 }
 
+
+app.Use(async (HttpContext context, Func<Task> next) =>
+{
+    if (context.Request.Path.Value.Contains("/Utility/") && !context.Request.Path.Value.Contains("."))
+        context.Request.Path = new PathString("/Utility/");
+    await next.Invoke();
+}); 
 
 app.UseHttpsRedirection();
 
 app.UseFileServer();
 
 app.UseRouting();
-
-app.UseCors(builder => builder.WithOrigins("https://localhost:44412").AllowAnyMethod().AllowAnyHeader());
 
 
 
@@ -99,8 +106,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
-
-
 
 DatabaseInitializer.CreateOrMigrate(app);
 

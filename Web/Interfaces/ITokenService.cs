@@ -7,6 +7,5 @@ namespace Web.Interfaces
     {
         Task<Tuple<string, string, string, string>> GenerateTokensAsync(string userId);
         Task<ValidateRefreshTokenResponse> ValidateRefreshTokenAsync(RefreshTokenRequest refreshTokenRequest);
-        Task<bool> RemoveRefreshTokenAsync(AppIdentityUser user);
     }
 }

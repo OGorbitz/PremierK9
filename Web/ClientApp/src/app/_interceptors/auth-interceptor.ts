@@ -35,23 +35,20 @@ export class AuthInterceptor implements HttpInterceptor {
       // refresh token
       let obs = this.tokenService.refreshToken();
       if (obs instanceof Observable) {
-        obs.pipe(
-          map(data => {
-            console.log(`refreshToken repsonse is ${JSON.stringify(data)}`);
-            return true;
-          }),
-          catchError((error: ErrorResponse) => {
-            console.log(`inside checkSession ${JSON.stringify(error)}`);
-            this.router.navigate(['/login']);
-            return EMPTY;
-          })
-        ) as Observable<boolean>;
-
-        return obs.pipe(switchMap(response => {
+        return obs.pipe(
+          //Good response pipe method
+          switchMap(response => {
           request = request.clone({ headers: request.headers.set('Authorization', `Bearer ${response.accessToken}`) });
 
           return next.handle(request);
-        }));
+          }),
+          //Error pipe method
+          catchError((error: ErrorResponse) => {
+            console.log(`Error refreshing session ${JSON.stringify(error)}`);
+            this.router.navigate(['/login']);
+            return EMPTY;
+          })
+        );
       }
 
     }

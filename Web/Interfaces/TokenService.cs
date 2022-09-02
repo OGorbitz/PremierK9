@@ -34,9 +34,13 @@ namespace Web.Interfaces
 
             var refreshTokenHashed = PasswordHelper.HashUsingPbkdf2(refreshToken, salt);
 
-            if (userRecord.RefreshTokens != null && userRecord.RefreshTokens.Any())
+            if (userRecord.RefreshTokens.Any())
             {
-                await RemoveRefreshTokenAsync(userRecord);
+                foreach(var rt in userRecord.RefreshTokens)
+                {
+                    if (rt.ExpiryDate < DateTime.Now)
+                        userRecord.RefreshTokens.Remove(rt);
+                }
 
             }
             userRecord.RefreshTokens?.Add(new RefreshToken
@@ -54,25 +58,6 @@ namespace Web.Interfaces
             var token = new Tuple<string, string, string, string>(accessToken, refreshToken, userRecord.UserName, userId);
 
             return token;
-        }
-
-        public async Task<bool> RemoveRefreshTokenAsync(AppIdentityUser user)
-        {
-            var userRecord = await _dbContext.Users.Include(o => o.RefreshTokens).FirstOrDefaultAsync(e => e.Id == user.Id);
-
-            if (userRecord == null)
-            {
-                return false;
-            }
-
-            if (userRecord.RefreshTokens != null && userRecord.RefreshTokens.Any())
-            {
-                var currentRefreshToken = userRecord.RefreshTokens.First();
-
-                _dbContext.RefreshTokens.Remove(currentRefreshToken);
-            }
-
-            return false;
         }
 
         public async Task<ValidateRefreshTokenResponse> ValidateRefreshTokenAsync(RefreshTokenRequest refreshTokenRequest)
@@ -105,6 +90,8 @@ namespace Web.Interfaces
                 response.ErrorCode = "R04";
                 return response;
             }
+
+            _dbContext.RefreshTokens.Remove(refreshToken);
 
             response.Success = true;
             response.UserId = refreshToken.UserId;

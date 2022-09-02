@@ -73,7 +73,7 @@ namespace Web.Controllers
 
             if (!validateRefreshTokenResponse.Success)
             {
-                return UnprocessableEntity(validateRefreshTokenResponse);
+                return Unauthorized(validateRefreshTokenResponse);
             }
 
             var token = await _tokenService.GenerateTokensAsync(validateRefreshTokenResponse.UserId);
