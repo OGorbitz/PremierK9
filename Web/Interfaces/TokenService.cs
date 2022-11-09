@@ -17,13 +17,13 @@ namespace Web.Interfaces
             _dbContext = dbContext;
             _tokenHelper = tokenHelper;
         }
-
-        public async Task<Tuple<string, string, string, string>> GenerateTokensAsync(string userId)
+        
+        public async Task<TokenResponse> GenerateTokensAsync(AppIdentityUser user)
         {
-            var accessToken = await _tokenHelper.GenerateAccessToken(userId);
+            var accessToken = await _tokenHelper.GenerateAccessToken(user.Id);
             var refreshToken = await _tokenHelper.GenerateRefreshToken();
 
-            var userRecord = await _dbContext.Users.Include(o => o.RefreshTokens).FirstOrDefaultAsync(e => e.Id == userId);
+            var userRecord = await _dbContext.Users.Include(o => o.RefreshTokens).FirstOrDefaultAsync(e => e.Id == user.Id);
 
             if (userRecord == null)
             {
@@ -36,67 +36,30 @@ namespace Web.Interfaces
 
             if (userRecord.RefreshTokens.Any())
             {
-                foreach(var rt in userRecord.RefreshTokens)
-                {
-                    if (rt.ExpiryDate < DateTime.Now)
-                        userRecord.RefreshTokens.Remove(rt);
-                }
-
+                _dbContext.RemoveRange(userRecord.RefreshTokens.FindAll(item => item.ExpiryDate < DateTime.Now));
             }
-            userRecord.RefreshTokens?.Add(new RefreshToken
+
+            var rt = new RefreshToken
             {
                 ExpiryDate = DateTime.Now.AddDays(30),
                 Ts = DateTime.Now,
-                UserId = userId,
+                User = userRecord,
+                UserId = user.Id,
                 TokenHash = refreshTokenHashed,
                 TokenSalt = Convert.ToBase64String(salt)
+            };
+            
+            userRecord.RefreshTokens.Add(rt);
 
-            });
+            _dbContext.SaveChanges();
 
-            await _dbContext.SaveChangesAsync();
-
-            var token = new Tuple<string, string, string, string>(accessToken, refreshToken, userRecord.UserName, userId);
-
-            return token;
-        }
-
-        public async Task<ValidateRefreshTokenResponse> ValidateRefreshTokenAsync(RefreshTokenRequest refreshTokenRequest)
-        {
-            var refreshToken = await _dbContext.RefreshTokens.FirstOrDefaultAsync(o => o.UserId == refreshTokenRequest.UserId);
-
-            var response = new ValidateRefreshTokenResponse();
-            if (refreshToken == null)
+            return new TokenResponse()
             {
-                response.Success = false;
-                response.Error = "Invalid session or user is already logged out";
-                response.ErrorCode = "R02";
-                return response;
-            }
-
-            var refreshTokenToValidateHash = PasswordHelper.HashUsingPbkdf2(refreshTokenRequest.RefreshToken, Convert.FromBase64String(refreshToken.TokenSalt));
-
-            if (refreshToken.TokenHash != refreshTokenToValidateHash)
-            {
-                response.Success = false;
-                response.Error = "Invalid refresh token";
-                response.ErrorCode = "R03";
-                return response;
-            }
-
-            if (refreshToken.ExpiryDate < DateTime.Now)
-            {
-                response.Success = false;
-                response.Error = "Refresh token has expired";
-                response.ErrorCode = "R04";
-                return response;
-            }
-
-            _dbContext.RefreshTokens.Remove(refreshToken);
-
-            response.Success = true;
-            response.UserId = refreshToken.UserId;
-
-            return response;
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                UserId = user.Id,
+                UserName = userRecord.UserName
+            };
         }
     }
 }

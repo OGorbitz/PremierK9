@@ -27,65 +27,97 @@ namespace Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
-            if (loginRequest == null)
-                return BadRequest(new TokenResponse
-                {
-                    Success = false,
-                    Error = "Please enter email and password!",
-                    ErrorCode = "L02"
-                });
-            var user = await _userManager.FindByEmailAsync(loginRequest.Email);
-
-            if (user == null || !await _userManager.CheckPasswordAsync(user, loginRequest.Password))
-                return Unauthorized(new TokenResponse
-                {
-                    Success = false,
-                    Error = "Invalid Email or Password!",
-                    ErrorCode = "L02"
-                });
-
-            var token = await System.Threading.Tasks.Task.Run(() => _tokenService.GenerateTokensAsync(user.Id));
-
-            return Ok(new TokenResponse
+            try
             {
-                Success = true,
-                AccessToken = token.Item1,
-                RefreshToken = token.Item2,
-                UserName = token.Item3,
-                UserId = token.Item4
-            });
+                if (loginRequest == null)
+                    return BadRequest(new TokenResponse
+                    {
+                        Success = false,
+                        Error = "Please enter email and password!",
+                        ErrorCode = "L02"
+                    });
+                var user = await _userManager.FindByEmailAsync(loginRequest.Email);
+
+                if (user == null || !await _userManager.CheckPasswordAsync(user, loginRequest.Password))
+                    return Unauthorized(new TokenResponse
+                    {
+                        Success = false,
+                        Error = "Invalid Email or Password!",
+                        ErrorCode = "L02"
+                    });
+
+                var tokenResponse = await _tokenService.GenerateTokensAsync(user);
+                return Ok(tokenResponse);
+                
+            } catch(Exception e) {
+                return Problem(e.Message, statusCode: 500, title: e.Source);
+            }
+
 
         }
 
         [HttpPost]
         public async Task<IActionResult> RefreshToken(RefreshTokenRequest refreshTokenRequest)
         {
-            if (refreshTokenRequest == null || string.IsNullOrEmpty(refreshTokenRequest.RefreshToken) || refreshTokenRequest.UserId == null || refreshTokenRequest.UserId == "")
+            try
             {
-                return BadRequest(new TokenResponse
+                if (refreshTokenRequest == null || string.IsNullOrEmpty(refreshTokenRequest.RefreshToken) || refreshTokenRequest.UserId == null || refreshTokenRequest.UserId == "")
                 {
-                    Error = "Missing refresh token details",
-                    ErrorCode = "R01"
-                });
+                    return BadRequest(new TokenResponse
+                    {
+                        Error = "Missing refresh token details",
+                        ErrorCode = "R01"
+                    });
+                }
+
+                var refreshToken = await _dbContext.RefreshTokens.Include(o => o.User).FirstOrDefaultAsync(e => e.UserId == refreshTokenRequest.UserId);
+
+                var response = new TokenResponse()
+                {
+                    Success = false
+                };
+
+                if (refreshToken == null)
+                {
+                    response.Success = false;
+                    response.Error = "Invalid session or user is already logged out";
+                    response.ErrorCode = "R02";
+                    return Unauthorized(response);
+                }
+
+                if (refreshToken.ExpiryDate < DateTime.Now)
+                {
+                    response.Success = false;
+                    response.Error = "Refresh token has expired";
+                    response.ErrorCode = "R03";
+                    return Unauthorized(response);
+                }
+
+                var refreshTokenToValidateHash = PasswordHelper.HashUsingPbkdf2(refreshTokenRequest.RefreshToken, Convert.FromBase64String(refreshToken.TokenSalt));
+
+                if (refreshToken.TokenHash != refreshTokenToValidateHash)
+                {
+                    response.Success = false;
+                    response.Error = "Invalid refresh token";
+                    response.ErrorCode = "R04";
+                    return Unauthorized(response);
+                }
+
+                _dbContext.RefreshTokens.Remove(refreshToken);
+
+                response.Success = true;
+                response.UserId = refreshToken.UserId;
+
+
+                var user = refreshToken.User;
+
+                var tokenResponse = await _tokenService.GenerateTokensAsync(user);
+                return Ok(tokenResponse);
             }
-
-            var validateRefreshTokenResponse = await _tokenService.ValidateRefreshTokenAsync(refreshTokenRequest);
-
-            if (!validateRefreshTokenResponse.Success)
+            catch (Exception e)
             {
-                return Unauthorized(validateRefreshTokenResponse);
+                return Problem(detail: e.Message + "\n" + e.InnerException, statusCode: 500, title: e.Source);
             }
-
-            var token = await _tokenService.GenerateTokensAsync(validateRefreshTokenResponse.UserId);
-
-            return Ok(new TokenResponse
-            {
-                Success = true,
-                AccessToken = token.Item1,
-                RefreshToken = token.Item2,
-                UserName = token.Item3,
-                UserId = token.Item4
-            });
         }
 
         [HttpPost]

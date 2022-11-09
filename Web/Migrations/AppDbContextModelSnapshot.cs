@@ -49,7 +49,7 @@ namespace Web.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Units");
+                    b.ToTable("Units", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -286,7 +286,7 @@ namespace Web.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UnitAuths");
+                    b.ToTable("UnitAuths", (string)null);
                 });
 
             modelBuilder.Entity("Web.Models.RefreshToken", b =>
